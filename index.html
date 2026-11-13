@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#111827">
+<title>I miei quiz</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1020;--panel:#141c2f;--panel2:#1b2740;--text:#f3f6ff;--muted:#9aa8c2;--line:#2b3853;--accent:#8b9cff;--green:#48c78e;--red:#ff7b87}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 15% 0%,#1b2850 0,transparent 34%),var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{width:min(100% - 32px,1000px);margin:40px auto 70px}.top{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:28px}.brand{display:flex;align-items:center;gap:12px}.logo{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#8b9cff,#6575e8);display:grid;place-items:center;font-size:22px}.eyebrow{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.12em}.top h1{font-size:24px;margin:0}.date{color:var(--muted);font-size:13px;text-align:right}
+.panel{background:rgba(20,28,47,.92);border:1px solid var(--line);border-radius:20px;padding:22px;box-shadow:0 16px 45px #0002}.intro{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:20px}.intro h2{font-size:clamp(25px,5vw,36px);margin:4px 0}.muted{color:var(--muted)}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:22px}.stat{background:var(--panel2);padding:16px;border-radius:15px}.stat strong{display:block;font-size:26px}.stat span{color:var(--muted);font-size:13px}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:18px 0}.toolbar input,.toolbar select,.field input,.field select,.field textarea{width:100%;background:#0e1628;color:var(--text);border:1px solid var(--line);border-radius:11px;padding:12px;font:inherit;outline:none}.toolbar input{flex:1;min-width:180px}.toolbar select{width:auto;min-width:145px}
+button,.button{border:0;border-radius:11px;padding:11px 15px;background:var(--accent);color:#10162b;font-weight:700;font:inherit;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:7px}button:hover,.button:hover{filter:brightness(1.08)}button.secondary{background:var(--panel2);color:var(--text);border:1px solid var(--line)}button.danger{background:#49232e;color:#ffdce0;border:1px solid #743442}button.small{font-size:13px;padding:8px 11px}
+.list{display:grid;gap:11px}.quiz{display:flex;align-items:center;gap:14px;background:#10192b;border:1px solid var(--line);border-radius:15px;padding:14px}.check{width:22px;height:22px;accent-color:var(--green);flex:none}.quiz-main{min-width:0;flex:1}.quiz-title{font-weight:700;overflow-wrap:anywhere}.meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:12px;margin-top:4px}.tag{background:#263452;border-radius:99px;padding:3px 9px}.done .quiz-title{text-decoration:line-through;color:var(--muted)}.actions{display:flex;gap:7px;flex-wrap:wrap}.empty{text-align:center;padding:38px 16px;color:var(--muted);border:1px dashed var(--line);border-radius:15px}
+dialog{border:1px solid var(--line);border-radius:18px;background:var(--panel);color:var(--text);width:min(520px,calc(100% - 28px));padding:0;box-shadow:0 25px 90px #0009}dialog::backdrop{background:#030712bb}.modal{padding:22px}.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}.modal h3{margin:0;font-size:21px}.field{display:grid;gap:6px;margin:13px 0}.field label{font-size:13px;color:var(--muted)}.field textarea{min-height:75px;resize:vertical}.modal-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:20px}.notice{font-size:12px;color:var(--muted);margin-top:16px;border-top:1px solid var(--line);padding-top:14px}
+@media(max-width:650px){main{margin:22px auto 45px}.top{align-items:flex-start}.date{max-width:115px}.panel{padding:16px}.stats{gap:8px}.stat{padding:12px}.stat strong{font-size:22px}.quiz{align-items:flex-start;flex-wrap:wrap}.quiz-main{width:calc(100% - 42px)}.actions{margin-left:36px;width:100%}.toolbar select{flex:1}.intro{align-items:flex-start;flex-direction:column}}
+</style>
+</head>
+<body>
+<main>
+  <header class="top">
+    <div class="brand"><div class="logo">✓</div><div><div class="eyebrow">La tua raccolta personale</div><h1>I miei quiz</h1></div></div>
+    <div class="date" id="todayLabel"></div>
+  </header>
+  <section class="panel">
+    <div class="intro"><div><div class="eyebrow">Dashboard giornaliera</div><h2>Quiz di oggi</h2><div class="muted">Tutti i tuoi collegamenti, sempre disponibili. Si ripetono ogni giorno.</div></div><button id="addBtn">＋ Aggiungi quiz</button></div>
+    <div class="stats">
+      <div class="stat"><strong id="totalCount">0</strong><span>Quiz totali</span></div>
+      <div class="stat"><strong id="doneCount">0</strong><span>Completati oggi</span></div>
+      <div class="stat"><strong id="leftCount">0</strong><span>Ancora da fare</span></div>
+    </div>
+    <div class="toolbar">
+      <input id="search" type="search" placeholder="Cerca un quiz...">
+      <select id="categoryFilter"><option value="">Tutte le categorie</option></select>
+      <select id="statusFilter"><option value="all">Tutti</option><option value="todo">Da fare</option><option value="done">Completati</option></select>
+    </div>
+    <div class="list" id="quizList"></div>
+    <div class="notice">I quiz si inseriscono una sola volta e restano nella lista. Clicca direttamente sul link per aprirlo. Il completamento vale solo per oggi: domani il quiz torna da fare. I dati restano salvati in questo browser; per sincronizzarli tra dispositivi serve una versione online con database.</div>
+  </section>
+</main>
+<dialog id="quizDialog">
+  <form class="modal" id="quizForm">
+    <div class="modal-head"><h3 id="dialogTitle">Aggiungi un quiz</h3><button type="button" class="secondary small" id="closeBtn">✕</button></div>
+    <input type="hidden" id="quizId">
+    <div class="field"><label for="name">Nome del quiz *</label><input id="name" required maxlength="90" placeholder="Es. Quiz di matematica"></div>
+    <div class="field"><label for="url">Link del quiz *</label><input id="url" type="text" inputmode="url" required placeholder="es. www.esempio.it o https://esempio.it"></div>
+    <div class="field"><label for="category">Categoria</label><input id="category" maxlength="40" placeholder="Es. Matematica, Inglese..."></div>
+    <div class="field"><label for="description">Nota (facoltativa)</label><textarea id="description" maxlength="180" placeholder="Es. Capitolo 5, esercizi assegnati..."></textarea></div>
+    <div class="modal-actions"><button type="button" class="secondary" id="cancelBtn">Annulla</button><button type="submit">Salva quiz</button></div>
+  </form>
+</dialog>
+<script>
+const STORAGE_KEY='my-daily-quizzes-v1';
+let quizzes=load();
+let editingId=null;
+const $=id=>document.getElementById(id);
+function load(){
+ try{
+  const raw=localStorage.getItem(STORAGE_KEY);
+  const data=raw?JSON.parse(raw):[];
+  return Array.isArray(data)?data:[];
+ }catch(err){
+  console.error('Errore nel caricamento dei quiz:',err);
+  return [];
+ }
+}
+function save(){
+ try{
+  localStorage.setItem(STORAGE_KEY,JSON.stringify(quizzes));
+  const saved=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');
+  if(!Array.isArray(saved)) throw new Error('Verifica del salvataggio fallita');
+  return true;
+ }catch(err){
+  console.error('Errore nel salvataggio:',err);
+  alert('Il browser non ha consentito il salvataggio. Apri il file scaricato direttamente con Chrome o Edge, in una finestra normale e non in incognito. Se stai usando un’anteprima, scarica il file e aprilo nel browser.');
+  return false;
+ }
+}
+function dayKey(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function validUrl(value){try{const u=new URL(value);return ['http:','https:'].includes(u.protocol)}catch{return false}}
+function render(){
+ const today=dayKey(), done=quizzes.filter(q=>q.completedOn===today).length;
+ $('todayLabel').textContent=new Date().toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+ $('totalCount').textContent=quizzes.length;$('doneCount').textContent=done;$('leftCount').textContent=quizzes.length-done;
+ const categories=[...new Set(quizzes.map(q=>q.category.trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'it'));
+ const selected=$('categoryFilter').value;
+ $('categoryFilter').innerHTML='<option value="">Tutte le categorie</option>'+categories.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');
+ $('categoryFilter').value=categories.includes(selected)?selected:'';
+ const term=$('search').value.toLowerCase(),cat=$('categoryFilter').value,status=$('statusFilter').value;
+ const shown=quizzes.filter(q=>(q.name+' '+q.category+' '+q.description).toLowerCase().includes(term)&&(!cat||q.category===cat)&&(status==='all'||(status==='done'?q.completedOn===today:q.completedOn!==today)));
+ const list=$('quizList');
+ if(!shown.length){list.innerHTML=`<div class="empty">${quizzes.length?'Nessun quiz corrisponde ai filtri.':'Non hai ancora aggiunto quiz. Premi “Aggiungi quiz” per iniziare.'}</div>`;return}
+ list.innerHTML=shown.map(q=>{const done=q.completedOn===today;return `<article class="quiz ${done?'done':''}">
+ <input class="check" type="checkbox" aria-label="Segna ${esc(q.name)} come completato" data-action="toggle" data-id="${q.id}" ${done?'checked':''}>
+ <div class="quiz-main"><div class="quiz-title">${esc(q.name)}</div><div class="meta"><a href="${esc(q.url)}" target="_blank" rel="noopener noreferrer" style="color:var(--accent);text-decoration:underline;overflow-wrap:anywhere">${esc(q.url)}</a>${q.category?`<span class="tag">${esc(q.category)}</span>`:''}${q.description?`<span>${esc(q.description)}</span>`:''}${done?'<span>✓ Completato oggi</span>':''}</div></div>
+ <div class="actions"><a class="button small" href="${esc(q.url)}" target="_blank" rel="noopener noreferrer">Apri ↗</a><button class="secondary small" data-action="edit" data-id="${q.id}">Modifica</button><button class="danger small" data-action="delete" data-id="${q.id}">Elimina</button></div>
+ </article>`}).join('');
+}
+function openDialog(q=null){
+ editingId=q?.id||null;$('dialogTitle').textContent=q?'Modifica quiz':'Aggiungi un quiz';
+ $('quizId').value=q?.id||'';$('name').value=q?.name||'';$('url').value=q?.url||'';
+ $('category').value=q?.category||'';$('description').value=q?.description||'';
+ $('quizDialog').showModal();$('name').focus();
+}
+function closeDialog(){$('quizDialog').close()}
+$('addBtn').addEventListener('click',()=>openDialog());
+$('closeBtn').addEventListener('click',closeDialog);$('cancelBtn').addEventListener('click',closeDialog);
+$('quizForm').addEventListener('submit',e=>{
+ e.preventDefault();
+ const name=$('name').value.trim();
+ let url=$('url').value.trim();
+ if(!name){alert('Inserisci il nome del quiz.');return}
+ if(url && !/^[a-z][a-z0-9+.-]*:\/\//i.test(url)) url='https://'+url;
+ if(!validUrl(url)){alert('Inserisci un link valido, per esempio www.esempio.it');return}
+ const data={name,url,category:$('category').value.trim(),description:$('description').value.trim()};
+ const previous=quizzes.map(q=>({...q}));
+ if(editingId){const q=quizzes.find(x=>x.id===editingId);if(q)Object.assign(q,data)}
+ else quizzes.push({id:(globalThis.crypto?.randomUUID?.()||('q-'+Date.now()+'-'+Math.random().toString(16).slice(2))),...data,completedOn:null});
+ if(save()){closeDialog();render()}else{quizzes=previous}
+});
+$('quizList').addEventListener('click',e=>{
+ const btn=e.target.closest('[data-action]');if(!btn)return;const q=quizzes.find(x=>x.id===btn.dataset.id);if(!q)return;
+ if(btn.dataset.action==='edit')openDialog(q);
+ if(btn.dataset.action==='delete'&&confirm(`Vuoi eliminare "${q.name}"?`)){const previous=quizzes;quizzes=quizzes.filter(x=>x.id!==q.id);if(save())render();else quizzes=previous;}
+});
+$('quizList').addEventListener('change',e=>{
+ if(e.target.dataset.action!=='toggle')return;const q=quizzes.find(x=>x.id===e.target.dataset.id);if(!q)return;
+ const previous=q.completedOn;q.completedOn=e.target.checked?dayKey():null;if(save())render();else q.completedOn=previous;
+});
+['search','categoryFilter','statusFilter'].forEach(id=>$(id).addEventListener(id==='search'?'input':'change',render));
+render();
+</script>
+</body>
+</html>
